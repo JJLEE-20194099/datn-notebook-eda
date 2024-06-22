@@ -1,14 +1,14 @@
 import pandas as pd
 
-df = pd.read_parquet('./data/data_df_hcm_v2.parquet')
-target_df = pd.read_parquet('./data/target_df_hcm_v2.parquet')
+df = pd.read_parquet('./data/data_df_hcm_v1.parquet')
+target_df = pd.read_parquet('./data/target_df_hcm_v1.parquet')
 
 
 df
 
 import json
 
-FS = json.load(open('./data/hcm_v2.json', 'r'))
+FS = json.load(open('./data/hcm_v1.json', 'r'))
 cat_cols = FS['cat_cols']
 num_cols = FS['num_cols']
 all_cols = cat_cols + num_cols
@@ -31,8 +31,8 @@ print("Start training:")
 
 full_df = pd.concat([df, target_df['target']], axis = 1)
 
-train_df = full_df.iloc[:-35000]
-test_df = full_df.iloc[-35000:]
+train_df = full_df.iloc[:35000]
+test_df = full_df.iloc[35000:]
 
 def train_test_split_by_col(train_df, test_df, X_cols, y_col):
     X_train, X_test, y_train, y_test = train_df[X_cols], test_df[X_cols], train_df[y_col], test_df[y_col]
@@ -52,13 +52,13 @@ from joblib import dump, load
 
 import os
 
-path = './model/hcm/knr/v2/'
+path = './model/hcm/knr/v1/'
 
 os.makedirs(path, exist_ok=True)
 
 estimator = model.best_estimator_
 dump(estimator, f"{path}model.joblib")
 
-load_model = load("./model/hcm/knr/v2/model.joblib")
+load_model = load("./model/hcm/knr/v1/model.joblib")
 
 print(load_model.predict(X_test)[:10])
